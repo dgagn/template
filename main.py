@@ -83,7 +83,7 @@ io.interactive()
 if stdout:
     print(template)
 else:
-    if os.path.exists(file):
+    if os.path.exists(file) and not args.force:
         print(f"Error: {file} already exists", file=sys.stderr)
         sys.exit(1)
     with open(file, "w") as f:
@@ -91,3 +91,18 @@ else:
     st = os.stat(file)
     os.chmod(file, st.st_mode | stat.S_IEXEC)
     print(f"Template saved to {file}")
+
+makefile_stub = '''
+.PHONY: ubuntu24 ubuntu22
+
+ubuntu24:
+	docker run -it --rm -v $(pwd):/chal ubuntu24-pwn
+ubuntu22:
+	docker run -it --rm -v $(pwd):/chal ubuntu22-pwn
+'''
+
+if not stdout:
+    if os.path.exists("Makefile") and not args.force:
+        with open("Makefile", "w") as f:
+            f.write(makefile_stub)
+    print("Makefile saved")
