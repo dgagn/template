@@ -103,6 +103,8 @@ ubuntu22:
 
 if not stdout:
     if os.path.exists("Makefile") and not args.force:
-        with open("Makefile", "w") as f:
-            f.write(makefile_stub)
+        print(f"Error: {file} already exists", file=sys.stderr)
+        sys.exit(1)
+    with open("Makefile", "w") as f:
+        f.write(makefile_stub)
     print("Makefile saved")
