@@ -96,9 +96,9 @@ makefile_stub = '''
 .PHONY: ubuntu24 ubuntu22
 
 ubuntu24:
-	docker run -it --rm -v $(pwd):/chal ubuntu24-pwn
+	docker run -it --rm -v `pwd`:/chal ubuntu24-pwn
 ubuntu22:
-	docker run -it --rm -v $(pwd):/chal ubuntu22-pwn
+	docker run -it --rm -v `pwd`:/chal ubuntu22-pwn
 '''.strip()
 
 if not stdout:
