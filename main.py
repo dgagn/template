@@ -99,7 +99,7 @@ ubuntu24:
 	docker run -it --rm -v $(pwd):/chal ubuntu24-pwn
 ubuntu22:
 	docker run -it --rm -v $(pwd):/chal ubuntu22-pwn
-'''
+'''.strip()
 
 if not stdout:
     if os.path.exists("Makefile") and not args.force:
