@@ -32,7 +32,7 @@ def parse_args():
 
 args = parse_args()
 
-base_directory = os.path.basename(args.binary)
+base_directory = os.path.dirname(args.binary)
 binary = args.binary
 file = args.name
 stdout = args.stdout
@@ -102,6 +102,7 @@ if args.patch:
         sys.exit(1)
 
 template_path = os.path.join(base_directory, file)
+print(template_path)
 if stdout:
     print(template)
 else:
