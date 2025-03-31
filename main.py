@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import subprocess
 import os
 import stat
 import sys
@@ -20,6 +21,8 @@ def parse_args():
     parser.add_argument("--ssl", action="store_true", help="Use SSL (default: False)")
     parser.add_argument("-p", "--stdout", action="store_true", help="Use stdout (default: False)")
     parser.add_argument("--file", default="ape.py", help="Output file (default: ape.py)")
+    parser.add_argument("--patch", action="store_true", help="Patch the binary (default: False)")
+    parser.add_argument("--make", action="store_true", help="Generate Makefile (default: False)")
     parser.add_argument("--help", action="help", help="Show this help message and exit")
 
     return parser.parse_args()
@@ -80,6 +83,15 @@ io = start()
 io.interactive()
 '''.strip()
 
+if args.patch:
+    cmd = ["unstrip", binary]
+    if args.force:
+        cmd.append("-f")
+    result = subprocess.run(cmd)
+    if result.returncode != 0:
+        print(f"Error: unstrip failed", file=sys.stderr)
+        sys.exit(1)
+
 if stdout:
     print(template)
 else:
@@ -101,7 +113,7 @@ ubuntu22:
 	docker run -it --rm -v `pwd`:/chal ubuntu22-pwn
 '''.strip()
 
-if not stdout:
+if not stdout and args.make:
     if os.path.exists("Makefile") and not args.force:
         print(f"Error: {file} already exists", file=sys.stderr)
         sys.exit(1)
