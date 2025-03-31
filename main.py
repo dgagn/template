@@ -33,7 +33,6 @@ def parse_args():
 args = parse_args()
 
 base_directory = os.path.dirname(args.binary)
-base_directory = os.path.abspath(base_directory)
 binary = args.binary
 file = args.name
 stdout = args.stdout
@@ -55,13 +54,15 @@ for line in checksec_binary:
     comment += f"# {line}\n"
 
 comment = comment.strip()
+
+binary_name = os.path.basename(binary)
 template = f'''
 #!/usr/bin/env python3
 from pwn import *
 
 {comment}
 
-elf = context.binary = ELF('{binary if not args.patch else binary + "_patched"}')
+elf = context.binary = ELF('./{binary_name if not args.patch else binary_name + "_patched"}')
 libc = elf.libc
 
 context.log_level = 'info'
