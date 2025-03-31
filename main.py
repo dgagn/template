@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--file", default="ape.py", help="Output file (default: ape.py)")
     parser.add_argument("--patch", action="store_true", help="Patch the binary (default: False)")
     parser.add_argument("--make", action="store_true", help="Generate Makefile (default: False)")
+    parser.add_argument("--libc", action="store_true", help="Creates a binding to libc")
     parser.add_argument("--help", action="help", help="Show this help message and exit")
 
     return parser.parse_args()
@@ -82,6 +83,9 @@ io = start()
 
 io.interactive()
 '''.strip()
+
+if args.libc:
+    os.symlink("/usr/lib/ctf/ubuntu24/libc.so.6", "libc.so.6")
 
 if args.patch:
     cmd = ["unstrip", binary]
