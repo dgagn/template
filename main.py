@@ -29,8 +29,10 @@ def parse_args():
 
     return parser.parse_args()
 
+
 args = parse_args()
 
+base_directory = os.path.basename(args.binary)
 binary = args.binary
 file = args.name
 stdout = args.stdout
@@ -85,7 +87,9 @@ io = start()
 io.interactive()
 '''.strip()
 
-if args.libc:
+libc_path = os.path.join(base_directory, "libc.so.6")
+
+if args.libc and not os.path.exists(libc_path):
     os.symlink("/usr/lib/ctf/ubuntu24/libc.so.6", "libc.so.6")
 
 if args.patch:
@@ -97,15 +101,15 @@ if args.patch:
         log.error(f"Error: unstrip failed")
         sys.exit(1)
 
+template_path = os.path.join(base_directory, file)
 if stdout:
     print(template)
 else:
-    if os.path.exists(file) and not args.force:
+    if os.path.exists(template_path) and not args.force:
         log.error(f"Error: {file} already exists")
         sys.exit(1)
-    with open(file, "w") as f:
+    with open(template_path, "w") as f:
         f.write(template)
     st = os.stat(file)
-    os.chmod(file, st.st_mode | stat.S_IEXEC)
+    os.chmod(template_path, st.st_mode | stat.S_IEXEC)
     log.success(f"Template saved to {file}")
-
