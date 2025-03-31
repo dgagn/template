@@ -33,7 +33,8 @@ if is_patched and not args.force:
     print("Error: binary already patched", file=sys.stderr)
     sys.exit(1)
 
-if is_patched:
+# redundant, but just in case
+if is_patched and args.force:
     os.remove(args.binary + ".patched")
 
 libs_path = pwn.libcdb.download_libraries(libc_path=libc_path, unstrip=True)
