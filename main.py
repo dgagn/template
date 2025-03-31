@@ -16,14 +16,14 @@ def parse_args():
     )
     parser.add_argument("binary", help="Path to the binary")
     parser.add_argument("-f", "--force", action="store_true", help="Overwrite existing file (default: False)")
-    parser.add_argument("--host", default="localhost", help="Remote host (default: localhost)")
-    parser.add_argument("--port", type=int, default=443, help="Remote port (default: 1337)")
+    parser.add_argument("--host", "-h", default="localhost", help="Remote host (default: localhost)")
+    parser.add_argument("--port", "-p", type=int, default=443, help="Remote port (default: 1337)")
     parser.add_argument("--ssl", action="store_true", help="Use SSL (default: False)")
-    parser.add_argument("-p", "--stdout", action="store_true", help="Use stdout (default: False)")
-    parser.add_argument("--file", default="ape.py", help="Output file (default: ape.py)")
-    parser.add_argument("--patch", action="store_true", help="Patch the binary (default: False)")
-    parser.add_argument("--make", action="store_true", help="Generate Makefile (default: False)")
-    parser.add_argument("--libc", action="store_true", help="Creates a binding to libc")
+    parser.add_argument("--stdout", action="store_true", help="Use stdout (default: False)")
+    parser.add_argument("--name", "-n", default="ape.py", help="Output file (default: ape.py)")
+    parser.add_argument("--patch", "-P", action="store_true", help="Patch the binary (default: False)")
+    parser.add_argument("--make", "-m", action="store_true", help="Generate Makefile (default: False)")
+    parser.add_argument("--libc", "-l", action="store_true", help="Creates a binding to libc")
     parser.add_argument("--help", action="help", help="Show this help message and exit")
 
     return parser.parse_args()
@@ -57,7 +57,7 @@ from pwn import *
 
 {comment}
 
-elf = context.binary = ELF('{binary}')
+elf = context.binary = ELF('{binary if not args.patch else binary + ".patched"}')
 libc = elf.libc
 
 context.log_level = 'info'
@@ -108,19 +108,3 @@ else:
     os.chmod(file, st.st_mode | stat.S_IEXEC)
     print(f"Template saved to {file}")
 
-makefile_stub = '''
-.PHONY: ubuntu24 ubuntu22
-
-ubuntu24:
-	docker run -it --rm -v `pwd`:/chal ubuntu24-pwn
-ubuntu22:
-	docker run -it --rm -v `pwd`:/chal ubuntu22-pwn
-'''.strip()
-
-if not stdout and args.make:
-    if os.path.exists("Makefile") and not args.force:
-        print(f"Error: {file} already exists", file=sys.stderr)
-        sys.exit(1)
-    with open("Makefile", "w") as f:
-        f.write(makefile_stub)
-    print("Makefile saved")
