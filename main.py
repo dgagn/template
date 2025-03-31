@@ -32,7 +32,7 @@ def parse_args():
 args = parse_args()
 
 binary = args.binary
-file = args.file
+file = args.name
 stdout = args.stdout
 
 if not os.path.exists(binary):
@@ -58,7 +58,7 @@ from pwn import *
 
 {comment}
 
-elf = context.binary = ELF('{binary if not args.patch else binary + "_patched"}')
+elf = context.binary = ELF('{binary}')
 libc = elf.libc
 
 context.log_level = 'info'
@@ -107,5 +107,5 @@ else:
         f.write(template)
     st = os.stat(file)
     os.chmod(file, st.st_mode | stat.S_IEXEC)
-    log.sucess(f"Template saved to {file}")
+    log.success(f"Template saved to {file}")
 
