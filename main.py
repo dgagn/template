@@ -7,6 +7,7 @@ import sys
 import argparse
 from pwnlib.context import context as ctx
 from pwnlib.elf.elf import ELF
+from pwn import log
 from elftools.common.exceptions import ELFError
 
 def parse_args():
@@ -57,7 +58,7 @@ from pwn import *
 
 {comment}
 
-elf = context.binary = ELF('{binary if not args.patch else binary + ".patched"}')
+elf = context.binary = ELF('{binary if not args.patch else binary + "_patched"}')
 libc = elf.libc
 
 context.log_level = 'info'
@@ -93,18 +94,18 @@ if args.patch:
         cmd.append("-f")
     result = subprocess.run(cmd)
     if result.returncode != 0:
-        print(f"Error: unstrip failed", file=sys.stderr)
+        log.error(f"Error: unstrip failed")
         sys.exit(1)
 
 if stdout:
     print(template)
 else:
     if os.path.exists(file) and not args.force:
-        print(f"Error: {file} already exists", file=sys.stderr)
+        log.error(f"Error: {file} already exists")
         sys.exit(1)
     with open(file, "w") as f:
         f.write(template)
     st = os.stat(file)
     os.chmod(file, st.st_mode | stat.S_IEXEC)
-    print(f"Template saved to {file}")
+    log.sucess(f"Template saved to {file}")
 
