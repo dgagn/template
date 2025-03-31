@@ -58,7 +58,7 @@ from pwn import *
 
 {comment}
 
-elf = context.binary = ELF('{binary}')
+elf = context.binary = ELF('{binary if not args.patch else binary + "_patched"}')
 libc = elf.libc
 
 context.log_level = 'info'
