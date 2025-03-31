@@ -33,6 +33,7 @@ def parse_args():
 args = parse_args()
 
 base_directory = os.path.dirname(args.binary)
+base_directory = os.path.abspath(base_directory)
 binary = args.binary
 file = args.name
 stdout = args.stdout
@@ -111,6 +112,6 @@ else:
         sys.exit(1)
     with open(template_path, "w") as f:
         f.write(template)
-    st = os.stat(file)
+    st = os.stat(template_path)
     os.chmod(template_path, st.st_mode | stat.S_IEXEC)
     log.success(f"Template saved to {file}")
